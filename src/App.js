@@ -49,9 +49,7 @@ class App extends React.Component {
 		bridge.subscribe(this.onBridgeResult);
 		var vk_profile_id = getUrlParameter("vk_profile_id")
 		console.log("vk_profile_id 1 = " + vk_profile_id)
-		if (vk_profile_id == undefined || vk_profile_id == ""){
-			vk_profile_id = "688075262"
-		}
+		
 		this.vk_profile_id = vk_profile_id
 		console.log("vk_profile_id 2 = " + this.vk_profile_id)
 	}
@@ -72,6 +70,12 @@ class App extends React.Component {
 				//this.setState({log : JSON.stringify(e.detail.data)})
 				console.log("vk_profile_id 3 = " + this.vk_profile_id)
 				console.log("myid 3 = " + e.detail.data.id)
+				
+
+				if (this.vk_profile_id == undefined || this.vk_profile_id == "" || this.vk_profile_id == "undefined"){
+					this.vk_profile_id = e.detail.data.id
+				}
+				
 				if (this.vk_profile_id == e.detail.data.id){
 					this.setState({isMyAlbum : true})
 				}
@@ -108,7 +112,7 @@ class App extends React.Component {
 	}
 	onFound = (snapshot) => {
 		var data = snapshot.val();
-		if (data != null && data != undefined){
+		if (data != null && data != undefined && data.user != undefined){
 			console.log("onFound")
 			if (this.myId != data.user.id){
 				if (data.can_sign_list != undefined && data.can_sign_list.length > 0){
@@ -125,10 +129,13 @@ class App extends React.Component {
 			}
 			this.setState({dbUser : data})
 		} else {
-			console.log("onFound not")
+			console.log("onFound not id = " + this.vk_profile_id)
 		}
 	}
 	openView = (view) => {
+		if (view == 'main'){
+			bridge.send("VKWebAppGetUserInfo");
+		}
 		this.setState({activeView : view})
 	}
 	render() {
